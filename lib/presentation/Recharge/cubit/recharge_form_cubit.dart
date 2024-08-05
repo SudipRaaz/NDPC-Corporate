@@ -1,14 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:ndpc_web/core/utils/data_constant.dart';
 
 part 'recharge_form_state.dart';
 
-class RechargeFormCubit extends Cubit<List> {
-  RechargeFormCubit() : super([]);
+class RechargeFormCubit extends Cubit<List<List<String>>> {
+  RechargeFormCubit() : super([AppConstantData().rechargeForm]);
 
-  addForm(List<String> form) {
-    state.add(form);
-    print("bloc cubit added $state");
-    emit([...state]);
+  void addForm(List<String> form) {
+    // Create a new list with the updated state
+    final updatedState = List.of(state)..add(form);
+    // Emit the updated state
+    emit(updatedState);
   }
 }

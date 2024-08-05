@@ -1,5 +1,12 @@
+import '../../routes/route_path.dart';
+
 class AppConstantData {
-  List recharge_form = [
+  Map<String, String> serviceNames = {
+    "Recharge": RoutesName.recharge_screen,
+    "NEA Bill": RoutesName.test_screen
+  };
+
+  List<String> rechargeForm = [
     "operatorName*",
     "Amount*",
     "Recharge Receiver Mobile Number*",

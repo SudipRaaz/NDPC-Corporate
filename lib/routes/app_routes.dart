@@ -11,8 +11,7 @@ class AppRoutes {
     switch (settings.name) {
       // case;
       case RoutesName.homePage_screen:
-        return MaterialPageRoute(
-            builder: (BuildContext context) => const HomePage());
+        return MaterialPageRoute(builder: (BuildContext context) => HomePage());
       case RoutesName.recharge_screen:
         return MaterialPageRoute(
             builder: (BuildContext context) => RechargeFormPage());

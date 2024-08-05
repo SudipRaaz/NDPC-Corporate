@@ -21,10 +21,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => ThemeProvider()),
-          BlocProvider(
-            create: (context) => RechargeFormCubit(),
-          )
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          BlocProvider(create: (_) => RechargeFormCubit()),
         ],
         child: Sizer(
           builder: (context, orientation, deviceType) {
@@ -44,7 +42,7 @@ class MyApp extends StatelessWidget {
                   supportedLocales: [Locale('en', '')],
 
                   // initial routing to splash screen
-                  initialRoute: RoutesName.recharge_screen,
+                  initialRoute: RoutesName.homePage_screen,
                   // path to generating routes
                   onGenerateRoute: AppRoutes.generateRoutes,
                 );

@@ -1,12 +1,15 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ndpc_web/presentation/Recharge/cubit/recharge_form_cubit.dart';
+import 'package:ndpc_web/presentation/Recharge/repo/rechargeFormModel.dart';
 import 'recharge_controller.dart'; // Import the controller
 
 class RechargeFormPage extends StatefulWidget {
+  const RechargeFormPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _RechargeFormPageState createState() => _RechargeFormPageState();
 }
 
@@ -36,7 +39,7 @@ class _RechargeFormPageState extends State<RechargeFormPage> {
     super.dispose();
   }
 
-  void _submitForm() async {
+  void _downloadForm(List<List<String>> currentFormState) async {
     if (_formKey.currentState!.validate()) {
       // Prepare the data
       List<String> rowData = [
@@ -46,9 +49,8 @@ class _RechargeFormPageState extends State<RechargeFormPage> {
         _individualRemarksController.text,
         ..._additionalParameterControllers.map((controller) => controller.text),
       ];
-
       // Use the controller to handle CSV download or saving
-      await _rechargeController.handleCsvDownload([rowData]);
+      await _rechargeController.handleCsvDownload(currentFormState);
 
       // Print the data to the console
       print('Form Submitted');
@@ -57,32 +59,38 @@ class _RechargeFormPageState extends State<RechargeFormPage> {
   }
 
   // add data
-  void _addFormData() async {
+  void _addFormData(RechargeFormCubit _rechargeFormCubit) async {
     if (_formKey.currentState!.validate()) {
       // Prepare the data
-      List<String> rowData = [
-        _operatorNameController.text,
-        _amountController.text,
-        _receiverMobileNumberController.text,
-        _individualRemarksController.text,
-        ..._additionalParameterControllers.map((controller) => controller.text),
-      ];
-      print("object: $rowData");
+      final rechargeData = RechargeFormModel(
+        operatorName: _operatorNameController.text,
+        amount: _amountController.text,
+        receiverMobileNumber: _receiverMobileNumberController.text,
+        individualRemarks: _individualRemarksController.text,
+        additionalParameters: _additionalParameterControllers
+            .map((controller) => controller.text)
+            .toList(),
+      );
 
-      RechargeFormCubit().addForm(rowData);
+      print("object: ${rechargeData.toCsvRow()}");
+
+      _rechargeFormCubit.addForm(rechargeData.toCsvRow());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final rechargeFormCubit = BlocProvider.of<RechargeFormCubit>(context);
+    final _rechargeFormCubit = BlocProvider.of<RechargeFormCubit>(context);
 
-    return BlocBuilder<RechargeFormCubit, List>(
-      bloc: rechargeFormCubit,
+    return BlocConsumer<RechargeFormCubit, List<List<String>>>(
+      bloc: _rechargeFormCubit,
+      listener: (context, state) {
+        // Optionally handle state changes here
+      },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Recharge Form'),
+            title: const Text('Recharge Form'),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -101,20 +109,18 @@ class _RechargeFormPageState extends State<RechargeFormPage> {
                       'Individual Remarks', 'Enter remarks',
                       optional: true),
                   ..._buildAdditionalParameters(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: _submitForm,
-                    child: Text('Add and download'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _addFormData,
-                    child: Text('Add'),
+                    onPressed: () {
+                      _addFormData(_rechargeFormCubit);
+                    },
+                    child: const Text('Add'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {});
+                      _downloadForm(state);
                     },
-                    child: Text('Update state'),
+                    child: const Text('Download'),
                   ),
                   Text('Bloc Data: $state'),
                 ],
